@@ -1,17 +1,20 @@
 <?php
+
 declare(strict_types=1);
+
 namespace MyPlot;
 
 use pocketmine\math\Vector3;
 
 class Plot
 {
+
 	/** @var string $levelName */
 	public $levelName = "";
 	/** @var int $X */
-	public $X = -0;
+	public $x = -0;
 	/** @var int $Z */
-	public $Z = -0;
+	public $z = -0;
 	/** @var string $name */
 	public $name = "";
 	/** @var string $owner */
@@ -33,8 +36,8 @@ class Plot
 	 * Plot constructor.
 	 *
 	 * @param string $levelName
-	 * @param int $X
-	 * @param int $Z
+	 * @param int $x
+	 * @param int $z
 	 * @param string $name
 	 * @param string $owner
 	 * @param array $helpers
@@ -44,19 +47,19 @@ class Plot
 	 * @param float $price
 	 * @param int $id
 	 */
-	public function __construct(string $levelName, int $X, int $Z, string $name = "", string $owner = "", array $helpers = [], array $denied = [], string $biome = "PLAINS", ?bool $pvp = null, float $price = -1, int $id = -1) {
+	public function __construct(string $levelName, int $x, int $z, string $name = "", string $owner = "", array $helpers = [], array $denied = [], string $biome = "PLAINS", ?bool $pvp = null, float $price = -1, int $id = -1) {
 		$this->levelName = $levelName;
-		$this->X = $X;
-		$this->Z = $Z;
+		$this->x = $x;
+		$this->z = $z;
 		$this->name = $name;
 		$this->owner = $owner;
 		$this->helpers = $helpers;
 		$this->denied = $denied;
 		$this->biome = strtoupper($biome);
 		$settings = MyPlot::getInstance()->getLevelSettings($levelName);
-		if(!isset($pvp) and $settings !== null) {
+		if (!isset($pvp) && $settings !== null) {
 			$this->pvp = !$settings->restrictPVP;
-		}else{
+		} else {
 			$this->pvp = $pvp;
 		}
 		$this->price = $price < 0 ? $settings->claimPrice : $price;
@@ -82,7 +85,7 @@ class Plot
 	 * @return bool
 	 */
 	public function addHelper(string $username) : bool {
-		if(!$this->isHelper($username)) {
+		if (!$this->isHelper($username)) {
 			$this->unDenyPlayer($username);
 			$this->helpers[] = $username;
 			return true;
@@ -98,11 +101,11 @@ class Plot
 	 * @return bool
 	 */
 	public function removeHelper(string $username) : bool {
-		if(!$this->isHelper($username)) {
+		if (!$this->isHelper($username)) {
 			return false;
 		}
 		$key = array_search($username, $this->helpers);
-		if($key === false) {
+		if ($key === false) {
 			return false;
 		}
 		unset($this->helpers[$key]);
@@ -128,7 +131,7 @@ class Plot
 	 * @return bool
 	 */
 	public function denyPlayer(string $username) : bool {
-		if(!$this->isDenied($username)) {
+		if (!$this->isDenied($username)) {
 			$this->removeHelper($username);
 			$this->denied[] = $username;
 			return true;
@@ -144,11 +147,11 @@ class Plot
 	 * @return bool
 	 */
 	public function unDenyPlayer(string $username) : bool {
-		if(!$this->isDenied($username)) {
+		if (!$this->isDenied($username)) {
 			return false;
 		}
 		$key = array_search($username, $this->denied);
-		if($key === false) {
+		if ($key === false) {
 			return false;
 		}
 		unset($this->denied[$key]);
@@ -163,7 +166,7 @@ class Plot
 	 * @return bool
 	 */
 	public function isSame(Plot $plot) : bool {
-		return $this->X === $plot->X and $this->Z === $plot->Z and $this->levelName === $plot->levelName;
+		return $this->x === $plot->x && $this->z === $plot->z && $this->levelName === $plot->levelName;
 	}
 
 	/**
@@ -177,20 +180,20 @@ class Plot
 		$pos = MyPlot::getInstance()->getPlotPosition($this);
 		$sidePos = $pos->getSide($side, $step * ($levelSettings->plotSize + $levelSettings->roadWidth));
 		$sidePlot = MyPlot::getInstance()->getPlotByPosition($sidePos);
-		if($sidePlot === null) {
-			switch($side) {
+		if ($sidePlot === null) {
+			switch ($side) {
 				case Vector3::SIDE_NORTH:
 					$sidePlot = new self($this->levelName, $this->X, $this->Z - $step);
-				break;
+					break;
 				case Vector3::SIDE_SOUTH:
 					$sidePlot = new self($this->levelName, $this->X, $this->Z + $step);
-				break;
+					break;
 				case Vector3::SIDE_WEST:
 					$sidePlot = new self($this->levelName, $this->X - $step, $this->Z);
-				break;
+					break;
 				case Vector3::SIDE_EAST:
 					$sidePlot = new self($this->levelName, $this->X + $step, $this->Z);
-				break;
+					break;
 				default:
 					return clone $this;
 			}
@@ -202,6 +205,7 @@ class Plot
 	 * @return string
 	 */
 	public function __toString() : string {
-		return "(" . $this->X . ";" . $this->Z . ")";
+		return "(" . $this->x . ";" . $this->z . ")";
 	}
+
 }
